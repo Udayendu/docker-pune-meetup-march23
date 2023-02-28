@@ -4,6 +4,8 @@
   - Master Node: 1
   - Worker Nodes: 3
 
+![k8d-deployment-diagram](https://user-images.githubusercontent.com/1809177/221905263-ed62dbde-7983-46f8-ad0d-fb490dc168eb.png)
+
 
 ## [v1.0] - 28-02-2022 (dd-mm-yyyy)
 
