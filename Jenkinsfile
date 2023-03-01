@@ -1,13 +1,16 @@
 def val = ''
-if (params.Datacenter == 'PNQ-Datacenter') {
-val = 'PNQ-Datacenter-Agent'
-} else if (params.Datacenter == 'HR-Datacenter') {
-val = 'HR-Datacenter-Agent'
-} 
+if (params.Datacenter == 'Ansible-Demo-DC-IND') {
+val = 'Ansible-Demo-DC-IND-Agent'
+} else if (params.Datacenter == 'Ansible-Demo-DC-US') {
+val = 'Ansible-Demo-DC-US-Agent'
+}
+
+registryLogin = "index.docker.io/v1/"
+repoURL = "uskar/alpinedevops:latest"
 
 pipeline {
 agent {
-	label val
+        label val
 }
 stages {
     stage('Set parameters') {
@@ -18,52 +21,52 @@ stages {
                 properties([
                     parameters([
                         [
-                            $class: 'ChoiceParameter', 
-                            choiceType: 'PT_SINGLE_SELECT', 
-                            description: '', 
-                            filterLength: 1, 
-                            filterable: false, 
-                            name: 'Environment', 
-                            randomName: 'choice-parameter-4317672109824', 
-                            script: [$class: 'GroovyScript', 
+                            $class: 'ChoiceParameter',
+                            choiceType: 'PT_SINGLE_SELECT',
+                            description: '',
+                            filterLength: 1,
+                            filterable: false,
+                            name: 'Environment',
+                            randomName: 'choice-parameter-4317672109824',
+                            script: [$class: 'GroovyScript',
                                 fallbackScript: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script: ''
-                                ], 
+                                ],
                                 script: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script: 'return [\'Select an Environment\',\'PROD\', \'DEV\']'
                                 ]
                             ]
                         ],
                         [
-                            $class: 'CascadeChoiceParameter', 
-                            choiceType: 'PT_SINGLE_SELECT', 
-                            description: '', 
-                            filterLength: 1, 
-                            filterable: false, 
-                            name: 'Datacenter', 
-                            randomName: 'choice-parameter-1434774074254', 
-                            referencedParameters: 'Environment', 
+                            $class: 'CascadeChoiceParameter',
+                            choiceType: 'PT_SINGLE_SELECT',
+                            description: '',
+                            filterLength: 1,
+                            filterable: false,
+                            name: 'Datacenter',
+                            randomName: 'choice-parameter-1434774074254',
+                            referencedParameters: 'Environment',
                             script: [
-                                $class: 'GroovyScript', 
+                                $class: 'GroovyScript',
                                 fallbackScript: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script: ''
                                 ], script: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script: '''
                                         def choices
                                         switch(Environment){
                                             case \'PROD\':
-                                                choices = [\'Select a Datacenter\', \'PNQ-Datacenter\', \'HR-Datacenter\']
+                                                choices = [\'Select a Datacenter\', \'Ansible-Demo-DC-IND\', \'Ansible-Demo-DC-US\']
                                                 break
                                             case \'DEV\':
-                                                choices = [\'Select a Datacenter\', \'PNQ-Datacenter\', \'HR-Datacenter\']
+                                                choices = [\'Select a Datacenter\', \'Ansible-Demo-DC-IND\', \'Ansible-Demo-DC-US\']
                                                 break
                                             default:
                                                 choices = [\'N/A\']
@@ -74,29 +77,29 @@ stages {
                             ]
                         ],
                         [
-                            $class: 'CascadeChoiceParameter', 
-                            choiceType: 'PT_SINGLE_SELECT', 
-                            description: '', 
-                            filterLength: 1, 
-                            filterable: false, 
-                            name: 'Provision_Server', 
-                            randomName: 'choice-parameter-143132192342342254', 
-                            referencedParameters: 'Datacenter', 
+                            $class: 'CascadeChoiceParameter',
+                            choiceType: 'PT_SINGLE_SELECT',
+                            description: '',
+                            filterLength: 1,
+                            filterable: false,
+                            name: 'Provision_Server',
+                            randomName: 'choice-parameter-143132192342342254',
+                            referencedParameters: 'Datacenter',
                             script: [
-                                $class: 'GroovyScript', 
+                                $class: 'GroovyScript',
                                 fallbackScript: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script: ''
                                 ], script: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script: '''
                                         def choices
-                                        if (Datacenter=='PNQ-Datacenter') {
-                                        	choices=['PNQ-Datacenter-Agent']
-                                        } else if (Datacenter=='HR-Datacenter') {
-                                            choices=['HR-Datacenter-Agent']
+                                        if (Datacenter=='Ansible-Demo-DC-IND') {
+                                                choices=['Ansible-Demo-DC-IND-Agent']
+                                        } else if (Datacenter=='Ansible-Demo-DC-US') {
+                                            choices=['Ansible-Demo-DC-US-Agent']
                                         } else {
                                             choices=['None']
                                         }
@@ -105,41 +108,41 @@ stages {
                             ]
                         ],
                         string(
-                            defaultValue: '', 
-                            description: 'Enter your vCenter IP or FQDN', 
-                            name: 'vCenter_URL', 
+                            defaultValue: '',
+                            description: 'Enter your vCenter IP or FQDN',
+                            name: 'vCenter_URL',
                             trim: true
                         ),
                         string(
-                            defaultValue: '', 
-                            description: '', 
-                            name: 'vSphere_ResourcePool', 
+                            defaultValue: '',
+                            description: '',
+                            name: 'vSphere_ResourcePool',
                             trim: true
                         ),
                         [
-                            $class: 'CascadeChoiceParameter', 
-                            choiceType: 'PT_SINGLE_SELECT', 
-                            description: '', 
-                            filterLength: 1, 
-                            filterable: false, 
-                            name: 'vSphere_Datacenter', 
-                            randomName: 'choice-parameter-1434323202365329', 
-                            referencedParameters: 'Environment, Datacenter', 
+                            $class: 'CascadeChoiceParameter',
+                            choiceType: 'PT_SINGLE_SELECT',
+                            description: '',
+                            filterLength: 1,
+                            filterable: false,
+                            name: 'vSphere_Datacenter',
+                            randomName: 'choice-parameter-1434323202365329',
+                            referencedParameters: 'Environment, Datacenter',
                             script: [
-                                $class: 'GroovyScript', 
+                                $class: 'GroovyScript',
                                 fallbackScript: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script: ''
                                 ], script: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script: '''
                                         def choices
                                         if (Environment=='PROD') {
-                                            choices=['PNQ-Datacenter','HR-Datacenter']
+                                            choices=['Ansible-Demo-DC-IND','Ansible-Demo-DC-US']
                                         } else if (Datacenter=='DEV') {
-                                            choices=['PNQ-Datacenter','HR-Datacenter']
+                                            choices=['Ansible-Demo-DC-IND','Ansible-Demo-DC-US']
                                         } else {
                                             choices=['None']
                                         }
@@ -148,119 +151,119 @@ stages {
                             ]
                         ],
                         string(
-                            defaultValue: 'VM Network', 
-                            description: 'Enter the Network for kubernetes node deployment', 
-                            name: 'Network_Subnet', 
+                            defaultValue: 'VM Network',
+                            description: 'Enter the Network for kubernetes node deployment',
+                            name: 'Network_Subnet',
                             trim: true
                         ),
                         string(
-                            defaultValue: '255.255.255.0', 
-                            description: '', 
-                            name: 'Subnet_Netmask', 
+                            defaultValue: '255.255.255.0',
+                            description: '',
+                            name: 'Subnet_Netmask',
                             trim: true
                         ),
                         string(
-                            defaultValue: '', 
-                            description: '', 
-                            name: 'Default_Gateway', 
+                            defaultValue: '',
+                            description: '',
+                            name: 'Default_Gateway',
                             trim: true
                         ),
                         choice(
                             choices: [
-                                'CentOS-7.9-temp'
-                            ], 
-                            description: '', 
+                                'rhel7-server-x86_64-template'
+                            ],
+                            description: '',
                             name: 'Template'
                         ),
                         string(
-                            defaultValue: '', 
-                            description: '', 
-                            name: 'DNS_Server1', 
+                            defaultValue: '',
+                            description: '',
+                            name: 'DNS_Server1',
                             trim: true
                         ),
                         string(
-                            defaultValue: '', 
-                            description: '', 
-                            name: 'DNS_Server2', 
+                            defaultValue: '',
+                            description: '',
+                            name: 'DNS_Server2',
                             trim: true
                         ),
                         string(
-                            defaultValue: '', 
-                            description: '', 
-                            name: 'DNS_Domain', 
+                            defaultValue: '',
+                            description: '',
+                            name: 'DNS_Domain',
                             trim: true
                         ),
                         string(
-                            defaultValue: '', 
-                            description: '', 
-                            name: 'k8s_master_ip', 
+                            defaultValue: '',
+                            description: '',
+                            name: 'k8s_master_ip',
                             trim: true
                         ),
                         string(
-                            defaultValue: 'k8s-master', 
-                            description: '', 
-                            name: 'k8s_master_hostname', 
+                            defaultValue: 'k8s-master',
+                            description: '',
+                            name: 'k8s_master_hostname',
                             trim: true
                         ),
                         string(
-                            defaultValue: '', 
-                            description: '', 
-                            name: 'k8s_worker01_ip', 
+                            defaultValue: '',
+                            description: '',
+                            name: 'k8s_worker01_ip',
                             trim: true
                         ),
                         string(
-                            defaultValue: 'k8s-worker01', 
-                            description: '', 
-                            name: 'k8s_worker01_hostname', 
+                            defaultValue: 'k8s-worker01',
+                            description: '',
+                            name: 'k8s_worker01_hostname',
                             trim: true
                         ),
                         string(
-                            defaultValue: '', 
-                            description: '', 
-                            name: 'k8s_worker02_ip', 
+                            defaultValue: '',
+                            description: '',
+                            name: 'k8s_worker02_ip',
                             trim: true
                         ),
                         string(
-                            defaultValue: 'k8s-worker02', 
-                            description: '', 
-                            name: 'k8s_worker02_hostname', 
+                            defaultValue: 'k8s-worker02',
+                            description: '',
+                            name: 'k8s_worker02_hostname',
                             trim: true
                         ),
                         string(
-                            defaultValue: '', 
-                            description: '', 
-                            name: 'k8s_worker03_ip', 
+                            defaultValue: '',
+                            description: '',
+                            name: 'k8s_worker03_ip',
                             trim: true
                         ),
                         string(
-                            defaultValue: 'k8s-worker03', 
-                            description: '', 
-                            name: 'k8s_worker03_hostname', 
+                            defaultValue: 'k8s-worker03',
+                            description: '',
+                            name: 'k8s_worker03_hostname',
                             trim: true
                         ),
                         [
-                            $class: 'CascadeChoiceParameter', 
-                            choiceType: 'PT_SINGLE_SELECT', 
-                            description: '', 
-                            filterLength: 1, 
-                            filterable: false, 
-                            name: 'Timezone', 
+                            $class: 'CascadeChoiceParameter',
+                            choiceType: 'PT_SINGLE_SELECT',
+                            description: '',
+                            filterLength: 1,
+                            filterable: false,
+                            name: 'Timezone',
                             randomName: 'choice-parameter-435671232309824',
-                            referencedParameters: 'Datacenter', 
-                            script: [$class: 'GroovyScript', 
+                            referencedParameters: 'Datacenter',
+                            script: [$class: 'GroovyScript',
                                 fallbackScript: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script: ''
-                                ], 
+                                ],
                                 script: [
-                                    classpath: [], 
-                                    sandbox: true, 
+                                    classpath: [],
+                                    sandbox: true,
                                     script:  '''
                                         def choices
-                                        if (Datacenter=='PNQ-Datacenter') {
+                                        if (Datacenter=='Ansible-Demo-DC-IND') {
                                             choices=['Asia/Kolkata']
-                                        } else if (Datacenter=='HR-Datacenter') {
+                                        } else if (Datacenter=='Ansible-Demo-DC-US') {
                                             choices=['america/denver']
                                         } else {
                                             choices=['None']
@@ -276,14 +279,14 @@ stages {
     }
 
     stage ('Replace values in inventory file') {
-    	steps {
-    		withCredentials([
-    			[$class: 'UsernamePasswordMultiBinding', credentialsId: getCredentialsId(),
+        steps {
+                withCredentials([
+                        [$class: 'UsernamePasswordMultiBinding', credentialsId: getCredentialsId(),
                 usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD'],
-                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'rhel-vm-login',
+                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'rhel-login',
                 usernameVariable: 'linuxos_username', passwordVariable: 'linuxos_userpassword']]) {
-    		sh '''
-cp -rf CodePull/* . 
+                sh '''
+cp -rf CodePull/* .
 
 # Variable assignment
 masterip=${k8s_master_ip}
@@ -361,55 +364,91 @@ dns_server2: '$DNS_Server2'
 dns_domain: '$DNS_Domain'
 
 # Kubernetes Specific Parameters
-pod_network: '172.16.0.0/16'   
-k8s_master_ip: '${masterip}'   
+pod_network: '172.16.0.0/16'
+k8s_master_ip: '${masterip}'
 '''
-    		}
-    	}
+                }
+        }
     }
 
+
     stage('Nodes Deployment') {
-    	steps {
-    		echo 'Starting the Kubernetes Nodes deployment....'
-            sh """
-            ansible-playbook -i inventory containerlab.yaml --tags "deploy"
-            """
-    	}
+        steps {
+            script {
+                docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
+                    docker.image("${repoURL}").pull()
+                    docker.image("${repoURL}").inside() {
+                        echo 'Starting the Kubernetes Nodes deployment....'
+                        sh """
+                        ansible-playbook -i inventory containerlab.yaml --tags "deploy"
+                        """
+                    }
+                }
+            }
+        }
     }
 
     stage('Guest OS Customization') {
-    	steps {
-    		echo 'Starting the guest os customization'
-            sh """
-            ansible-playbook -i inventory containerlab.yaml --tags "oscustom"
-            """
-    	}
+        steps {
+            script {
+                docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
+                    docker.image("${repoURL}").pull()
+                    docker.image("${repoURL}").inside() {
+                        echo 'Starting the guest os customization'
+                        sh """
+                        ansible-playbook -i inventory containerlab.yaml --tags "oscustom"
+                        """
+                    }
+                }
+            }
+        }
     }
 
     stage('Kubernetes Master Setup') {
         steps {
-            echo 'Starting the Kubernetes Master Setup'
-            sh """
-            ansible-playbook -i inventory containerlab.yaml --tags "mastersetup"
-            """
+            script {
+                docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
+                    docker.image("${repoURL}").pull()
+                    docker.image("${repoURL}").inside() {
+                        echo 'Starting the Kubernetes Master Setup'
+                        sh """
+                        ansible-playbook -i inventory containerlab.yaml --tags "mastersetup"
+                        """
+                    }
+                }
+            }
         }
     }
 
     stage('Kubernetes Nodes Setup') {
         steps {
-            echo 'Starting the Kubernetes Node Setup'
-            sh """
-            ansible-playbook -i inventory containerlab.yaml --tags "nodesetup"
-            """
+            script {
+                docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
+                    docker.image("${repoURL}").pull()
+                    docker.image("${repoURL}").inside() {
+                        echo 'Starting the Kubernetes Node Setup'
+                        sh """
+                        ansible-playbook -i inventory containerlab.yaml --tags "nodesetup"
+                        """
+                    }
+                }
+            }
         }
     }
 
     stage('Kubernetes Nodes labeling') {
         steps {
-            echo 'Starting the Kubernetes Nodes Labeling'
-            sh """
-            ansible-playbook -i inventory containerlab.yaml --tags "nodelabel"
-            """
+            script {
+                docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
+                    docker.image("${repoURL}").pull()
+                    docker.image("${repoURL}").inside() {
+                        echo 'Starting the Kubernetes Nodes Labeling'
+                        sh """
+                        ansible-playbook -i inventory containerlab.yaml --tags "nodelabel"
+                        """
+                    }
+                }
+            }
         }
     }
 
@@ -418,7 +457,7 @@ k8s_master_ip: '${masterip}'
 
 String getCredentialsId() {
 if (params.Environment == "PROD") {
-    "vCenter-Prod-Login"
+    "vCenter-Login"
 } else if (params.Environment == "DEV") {
     "vCenter-Dev-Login"
 } else {
