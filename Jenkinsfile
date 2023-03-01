@@ -5,6 +5,7 @@ val = 'Ansible-Demo-DC-IND-Agent'
 val = 'Ansible-Demo-DC-US-Agent'
 }
 
+dockerOpts = "-v /tmp:/tmp"
 registryLogin = "index.docker.io/v1/"
 repoURL = "uskar/alpinedevops:latest"
 
@@ -371,13 +372,12 @@ k8s_master_ip: '${masterip}'
         }
     }
 
-
     stage('Nodes Deployment') {
         steps {
             script {
                 docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
                     docker.image("${repoURL}").pull()
-                    docker.image("${repoURL}").inside() {
+                    docker.image("${repoURL}").inside(dockerOpts) {
                         echo 'Starting the Kubernetes Nodes deployment....'
                         sh """
                         ansible-playbook -i inventory containerlab.yaml --tags "deploy"
@@ -393,7 +393,7 @@ k8s_master_ip: '${masterip}'
             script {
                 docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
                     docker.image("${repoURL}").pull()
-                    docker.image("${repoURL}").inside() {
+                    docker.image("${repoURL}").inside(dockerOpts) {
                         echo 'Starting the guest os customization'
                         sh """
                         ansible-playbook -i inventory containerlab.yaml --tags "oscustom"
@@ -409,7 +409,7 @@ k8s_master_ip: '${masterip}'
             script {
                 docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
                     docker.image("${repoURL}").pull()
-                    docker.image("${repoURL}").inside() {
+                    docker.image("${repoURL}").inside(dockerOpts) {
                         echo 'Starting the Kubernetes Master Setup'
                         sh """
                         ansible-playbook -i inventory containerlab.yaml --tags "mastersetup"
@@ -425,7 +425,7 @@ k8s_master_ip: '${masterip}'
             script {
                 docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
                     docker.image("${repoURL}").pull()
-                    docker.image("${repoURL}").inside() {
+                    docker.image("${repoURL}").inside(dockerOpts) {
                         echo 'Starting the Kubernetes Node Setup'
                         sh """
                         ansible-playbook -i inventory containerlab.yaml --tags "nodesetup"
@@ -441,7 +441,7 @@ k8s_master_ip: '${masterip}'
             script {
                 docker.withRegistry("https://${registryLogin}", "docker-registry-login01") {
                     docker.image("${repoURL}").pull()
-                    docker.image("${repoURL}").inside() {
+                    docker.image("${repoURL}").inside(dockerOpts) {
                         echo 'Starting the Kubernetes Nodes Labeling'
                         sh """
                         ansible-playbook -i inventory containerlab.yaml --tags "nodelabel"
