@@ -3,21 +3,18 @@
   connection: local
   tags: deploy
   gather_facts: no
-
   tasks:
     - name: Deploy the kubernetes servers
       include_role:
         name: deploy
 
-
 - hosts: nodes
   connection: ssh
   tags: oscustom
   gather_facts: no
-
   tasks:
     - ping:
-
+    
     - name: Customize the kubernetes servers
       include_role:
         name: gocustom
@@ -26,19 +23,16 @@
   connection: local
   tags: delete
   gather_facts: no
-
   tasks:
     - name: Delete the kubernetes server
       include_role:
         name: delete
-
 
 # VM snapshot managment roles
 - hosts: containerlab
   connection: local
   tags: vmsnapshot
   gather_facts: no
-
   tasks:
     - name: Take the snapshot of kubernetes servers
       include_role:
@@ -58,7 +52,6 @@
   connection: local
   tags: vmsnapshotremove
   gather_facts: no
-
   tasks:
     - name: Remove the snapshot of kubernetes servers
       include_role:
@@ -70,7 +63,6 @@
   connection: ssh
   tags: mastersetup
   gather_facts: no
-
   tasks:
     - ping:
 
@@ -82,7 +74,6 @@
   connection: ssh
   tags: nodesetup
   gather_facts: no
-
   tasks:
     - ping:
 
@@ -94,7 +85,6 @@
   connection: ssh
   tags: nodelabel
   gather_facts: no
-
   tasks:
     - ping:
 
