@@ -1,5 +1,5 @@
 # Changelog
-- Kubernetes Cluster deployment using Ansible & Jenkins
+- Kubernetes Cluster deployment using Ansible, Docker & Jenkins
 - This deployment will setup a Kubernetes Cluster of:
   - Master Node: 1
   - Worker Nodes: 3
@@ -25,6 +25,7 @@
       - nodelabel
 
 ### Software support
+  - alpine: 3.17
   - ansible: 7.1.0
   - ansible-core: 2.14.1
   - pyvmomi: 7.0.3
@@ -38,6 +39,22 @@
 
 ### Jenkins file name
   - Jenkinsfile
+
+### Dockerfile
+  - alpinedevops.dockerfile
+
+## Docker image build process
+- To build the docker image, use the below command:
+  
+  > $ docker build --no-cache=true -f <file_name>.dockerfile -t <docker_registry>/alpinedevops:latest
+
+- To login to the hub.docker.com, use the below command:
+
+  > $ docker login
+
+- To push the docker image, use the below command:
+
+  > $ docker push <docker_registry>/alpinedevops:latest
 
 ## Deployment Guide:
 
