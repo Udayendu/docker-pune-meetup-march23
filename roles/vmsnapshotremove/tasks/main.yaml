@@ -10,7 +10,7 @@
   delegate_to: localhost
   register: wdc_info
 
-- name: Creating snapshots for kubernetes servers
+- name: Removing snapshots for kubernetes servers
   vmware_guest_snapshot:
     hostname: "{{ vcenter_hostname }}"
     username: "{{ vcenter_username }}"
